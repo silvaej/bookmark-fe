@@ -1,0 +1,72 @@
+import { Button, Container, Link, Typography } from '@mui/material'
+import Sheet from '@mui/joy/Sheet'
+import { TextField } from '@mui/joy'
+import { FormEvent, useState } from 'react'
+
+function Login() {
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+
+    const handleSubmit = () => {
+        console.log(email, password)
+    }
+
+    return (
+        <Container maxWidth='xl'>
+            <Sheet
+                sx={{
+                    width: 300,
+                    mx: 'auto',
+                    my: 20, // margin top & botom
+                    py: 3, // padding top & bottom
+                    px: 2, // padding left & right
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 2,
+                    borderRadius: 'sm',
+                    boxShadow: 'md',
+                }}
+                variant='outlined'>
+                <div>
+                    <Typography variant='h4'>
+                        <b>Welcome!</b>
+                    </Typography>
+                    <Typography variant='body2'>
+                        Sign in to continue.
+                    </Typography>
+                </div>
+                <TextField
+                    name='email'
+                    type='email'
+                    placeholder='juandelacruz@example.com'
+                    label='Email'
+                    onChange={(e: FormEvent<HTMLInputElement>) =>
+                        setEmail(e.currentTarget.value)
+                    }
+                />
+                <TextField
+                    name='password'
+                    type='password'
+                    placeholder='password'
+                    label='Password'
+                    onChange={(e: FormEvent<HTMLInputElement>) =>
+                        setPassword(e.currentTarget.value)
+                    }
+                />
+                <Button
+                    sx={{ mt: 1 }}
+                    variant='contained'
+                    onClick={handleSubmit}
+                    disabled={!email || !password}>
+                    Log in
+                </Button>
+                <Typography fontSize='sm' sx={{ alignSelf: 'center' }}>
+                    Don&apos;t have an account?{' '}
+                    <Link href='/sign-up'>Sign up</Link>
+                </Typography>
+            </Sheet>
+        </Container>
+    )
+}
+
+export default Login
