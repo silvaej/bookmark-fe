@@ -1,14 +1,28 @@
-import { Button, Container, Link, Typography } from '@mui/material'
+import { Button, Container, Typography } from '@mui/material'
 import Sheet from '@mui/joy/Sheet'
 import { TextField } from '@mui/joy'
 import { FormEvent, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import axios, { AxiosError } from 'axios'
 
 function Login() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [error, setError] = useState('')
+    const navigate = useNavigate()
 
-    const handleSubmit = () => {
-        console.log(email, password)
+    const handleSubmit = async () => {
+        try {
+            const result = await axios.get(
+                `http://localhost:8080/auth?email=${email}&password=${password}`
+            )
+            if (result.data.ok) {
+                localStorage.setItem('access_token', result.data.token)
+                navigate('/')
+            }
+        } catch (err) {
+            if (err instanceof AxiosError) setError(err.response!.data.reason)
+        }
     }
 
     return (
@@ -35,6 +49,11 @@ function Login() {
                         Sign in to continue.
                     </Typography>
                 </div>
+                {error && (
+                    <Typography variant='body2' sx={{ color: 'red' }}>
+                        {error}!
+                    </Typography>
+                )}
                 <TextField
                     name='email'
                     type='email'
@@ -62,7 +81,7 @@ function Login() {
                 </Button>
                 <Typography fontSize='sm' sx={{ alignSelf: 'center' }}>
                     Don&apos;t have an account?{' '}
-                    <Link href='/sign-up'>Sign up</Link>
+                    <Link to='/register'>Sign up</Link>
                 </Typography>
             </Sheet>
         </Container>

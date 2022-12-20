@@ -11,20 +11,16 @@ import Button from '@mui/material/Button'
 import MenuItem from '@mui/material/MenuItem'
 import BookmarkIcon from '@mui/icons-material/Bookmark'
 import LoginIcon from '@mui/icons-material/Login'
+import LogoutIcon from '@mui/icons-material/Logout'
 
 import { useNavigate } from 'react-router-dom'
-import { Link as MaterialLink } from '@mui/material'
+import { useState } from 'react'
 
 const pages = ['Movies']
 const settings = ['Logout']
 
 function Header() {
-    const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
-        null
-    )
-    const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
-        null
-    )
+    const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null)
 
     const navigate = useNavigate()
 
@@ -38,6 +34,11 @@ function Header() {
 
     const handleLogin = () => {
         navigate('/login')
+    }
+
+    const handleLogout = () => {
+        localStorage.removeItem('access_token')
+        window.location.reload()
     }
 
     const handleHome = () => {
@@ -154,12 +155,21 @@ function Header() {
                             flexGrow: 0,
                             display: { xs: 'none', md: 'flex' },
                         }}>
-                        <Button
-                            variant='contained'
-                            endIcon={<LoginIcon />}
-                            onClick={handleLogin}>
-                            Login
-                        </Button>
+                        {localStorage.getItem('access_token') ? (
+                            <Button
+                                variant='contained'
+                                endIcon={<LogoutIcon />}
+                                onClick={handleLogout}>
+                                Logout
+                            </Button>
+                        ) : (
+                            <Button
+                                variant='contained'
+                                endIcon={<LoginIcon />}
+                                onClick={handleLogin}>
+                                Login
+                            </Button>
+                        )}
                     </Box>
                     <Box
                         sx={{
