@@ -17,7 +17,10 @@ function Login() {
                 `http://localhost:8080/auth?email=${email}&password=${password}`
             )
             if (result.data.ok) {
-                localStorage.setItem('access_token', result.data.token)
+                localStorage.setItem(
+                    '__BOOKMARK_ACCESS_TOKEN__',
+                    result.data.token
+                )
                 navigate('/')
             }
         } catch (err) {

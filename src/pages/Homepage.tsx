@@ -20,7 +20,7 @@ function Homepage() {
     const [uid, setUid] = useState('')
 
     useEffect(() => {
-        const ACCESS_TOKEN = localStorage.getItem('access_token')
+        const ACCESS_TOKEN = localStorage.getItem('__BOOKMARK_ACCESS_TOKEN__')
         if (ACCESS_TOKEN) setToken(ACCESS_TOKEN)
     }, [])
 

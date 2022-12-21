@@ -37,7 +37,7 @@ function Header() {
     }
 
     const handleLogout = () => {
-        localStorage.removeItem('access_token')
+        localStorage.removeItem('__BOOKMARK_ACCESS_TOKEN__')
         window.location.reload()
     }
 
@@ -155,7 +155,7 @@ function Header() {
                             flexGrow: 0,
                             display: { xs: 'none', md: 'flex' },
                         }}>
-                        {localStorage.getItem('access_token') ? (
+                        {localStorage.getItem('__BOOKMARK_ACCESS_TOKEN__') ? (
                             <Button
                                 variant='contained'
                                 endIcon={<LogoutIcon />}
