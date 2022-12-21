@@ -1,1 +1,8 @@
-export const i = 1
+import { combineReducers } from 'redux'
+import users from './userReducer'
+
+const rootReducer = combineReducers({
+    users,
+})
+
+export default rootReducer

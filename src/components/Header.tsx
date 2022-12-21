@@ -15,11 +15,12 @@ import LogoutIcon from '@mui/icons-material/Logout'
 
 import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
+import { connect } from 'react-redux'
+import * as userActions from '../redux/actions/userActions'
 
 const pages = ['Movies']
-const settings = ['Logout']
 
-function Header() {
+function Header(props: any) {
     const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null)
 
     const navigate = useNavigate()
@@ -38,6 +39,7 @@ function Header() {
 
     const handleLogout = () => {
         localStorage.removeItem('__BOOKMARK_ACCESS_TOKEN__')
+        props.dispatch(userActions.removeUser())
         window.location.reload()
     }
 
@@ -186,4 +188,10 @@ function Header() {
     )
 }
 
-export default Header
+function mapStateToProps(state: any) {
+    return {
+        users: state.users,
+    }
+}
+
+export default connect(mapStateToProps)(Header)
