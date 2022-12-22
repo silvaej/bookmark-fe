@@ -4,24 +4,30 @@ import { TextField } from '@mui/joy'
 import { FormEvent, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import axios, { AxiosError } from 'axios'
+import { connect } from 'react-redux'
+import * as userActions from '../redux/actions/userActions'
+import decode from '../utils/decode'
+import { login } from '../utils/authApi'
 
-function Login() {
+function Login(props: any) {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [error, setError] = useState('')
     const navigate = useNavigate()
 
     const handleSubmit = async () => {
-        try {
-            const result = await axios.get(
-                `http://localhost:8080/auth?email=${email}&password=${password}`
-            )
-            if (result.data.ok) {
-                localStorage.setItem('access_token', result.data.token)
-                navigate('/')
-            }
-        } catch (err) {
-            if (err instanceof AxiosError) setError(err.response!.data.reason)
+        const {
+            success,
+            data,
+            error: responseError,
+        } = await login(email, password)
+        if (success && data) {
+            const user = decode(data)
+            props.dispatch(userActions.createUser(user))
+            localStorage.setItem('__BOOKMARK_ACCESS_TOKEN__', data)
+            navigate('/')
+        } else if (responseError) {
+            setError(responseError)
         }
     }
 
@@ -88,4 +94,10 @@ function Login() {
     )
 }
 
-export default Login
+function mapStateToProps(state: any) {
+    return {
+        user: state.user,
+    }
+}
+
+export default connect(mapStateToProps)(Login)

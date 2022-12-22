@@ -15,11 +15,12 @@ import LogoutIcon from '@mui/icons-material/Logout'
 
 import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
+import { connect } from 'react-redux'
+import * as userActions from '../redux/actions/userActions'
 
 const pages = ['Movies']
-const settings = ['Logout']
 
-function Header() {
+function Header(props: any) {
     const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null)
 
     const navigate = useNavigate()
@@ -37,7 +38,8 @@ function Header() {
     }
 
     const handleLogout = () => {
-        localStorage.removeItem('access_token')
+        localStorage.removeItem('__BOOKMARK_ACCESS_TOKEN__')
+        props.dispatch(userActions.removeUser())
         window.location.reload()
     }
 
@@ -100,15 +102,37 @@ function Header() {
                             sx={{
                                 display: { xs: 'block', md: 'none' },
                             }}>
-                            {pages.map((page) => (
-                                <MenuItem
-                                    key={page}
-                                    onClick={handleCloseNavMenu}>
-                                    <Typography textAlign='center'>
-                                        {page}
-                                    </Typography>
-                                </MenuItem>
-                            ))}
+                            {localStorage.getItem(
+                                '__BOOKMARK_ACCESS_TOKEN__'
+                            ) &&
+                                pages.map((page) => (
+                                    <MenuItem
+                                        key={page}
+                                        onClick={handleCloseNavMenu}>
+                                        <Typography textAlign='center'>
+                                            {page}
+                                        </Typography>
+                                    </MenuItem>
+                                ))}
+
+                            <MenuItem
+                                key='login'
+                                onClick={() => {
+                                    !localStorage.getItem(
+                                        '__BOOKMARK_ACCESS_TOKEN__'
+                                    )
+                                        ? handleLogin()
+                                        : handleLogout()
+                                    handleCloseNavMenu()
+                                }}>
+                                <Typography textAlign='center'>
+                                    {!localStorage.getItem(
+                                        '__BOOKMARK_ACCESS_TOKEN__'
+                                    )
+                                        ? 'Login'
+                                        : 'Logout'}
+                                </Typography>
+                            </MenuItem>
                         </Menu>
                     </Box>
                     <BookmarkIcon
@@ -117,8 +141,7 @@ function Header() {
                     <Typography
                         variant='h5'
                         noWrap
-                        component='a'
-                        href=''
+                        onClick={handleHome}
                         sx={{
                             mr: 2,
                             display: { xs: 'flex', md: 'none' },
@@ -136,26 +159,30 @@ function Header() {
                             flexGrow: 1,
                             display: { xs: 'none', md: 'flex' },
                         }}>
-                        {pages.map((page) => (
-                            <Button
-                                key={page}
-                                onClick={handleCloseNavMenu}
-                                sx={{
-                                    my: 2,
-                                    color: 'white',
-                                    display: 'block',
-                                }}>
-                                {page}
-                            </Button>
-                        ))}
+                        {localStorage.getItem('__BOOKMARK_ACCESS_TOKEN__') &&
+                            pages.map((page) => (
+                                <Button
+                                    key={page}
+                                    onClick={handleCloseNavMenu}
+                                    sx={{
+                                        my: 2,
+                                        color: 'white',
+                                        display: 'block',
+                                    }}>
+                                    {page}
+                                </Button>
+                            ))}
                     </Box>
 
                     <Box
                         sx={{
                             flexGrow: 0,
-                            display: { xs: 'none', md: 'flex' },
+                            display: {
+                                xs: 'none',
+                                md: 'flex',
+                            },
                         }}>
-                        {localStorage.getItem('access_token') ? (
+                        {localStorage.getItem('__BOOKMARK_ACCESS_TOKEN__') ? (
                             <Button
                                 variant='contained'
                                 endIcon={<LogoutIcon />}
@@ -171,19 +198,16 @@ function Header() {
                             </Button>
                         )}
                     </Box>
-                    <Box
-                        sx={{
-                            flexGrow: 0,
-                            display: { xs: 'flex', md: 'none' },
-                        }}>
-                        <Button>
-                            <LoginIcon />
-                        </Button>
-                    </Box>
                 </Toolbar>
             </Container>
         </AppBar>
     )
 }
 
-export default Header
+function mapStateToProps(state: any) {
+    return {
+        user: state.user,
+    }
+}
+
+export default connect(mapStateToProps)(Header)
