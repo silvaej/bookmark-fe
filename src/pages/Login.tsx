@@ -5,8 +5,9 @@ import { FormEvent, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import axios, { AxiosError } from 'axios'
 import { connect } from 'react-redux'
-import jwt_decode from 'jwt-decode'
 import * as userActions from '../redux/actions/userActions'
+import decode from '../utils/decode'
+import { login } from '../utils/authApi'
 
 function Login(props: any) {
     const [email, setEmail] = useState('')
@@ -15,28 +16,18 @@ function Login(props: any) {
     const navigate = useNavigate()
 
     const handleSubmit = async () => {
-        try {
-            const result = await axios.get(
-                `http://localhost:8080/auth?email=${email}&password=${password}`
-            )
-            if (result.data.ok) {
-                const decoded = jwt_decode(result.data.token)
-                let user = {}
-                if (decoded instanceof Object) {
-                    Object.entries(decoded).forEach((el) => {
-                        if (['id', 'email', 'username'].includes(el[0]))
-                            user = { ...user, [el[0]]: el[1] }
-                    })
-                }
-                props.dispatch(userActions.createUser(user))
-                localStorage.setItem(
-                    '__BOOKMARK_ACCESS_TOKEN__',
-                    result.data.token
-                )
-                navigate('/')
-            }
-        } catch (err) {
-            if (err instanceof AxiosError) setError(err.response!.data.reason)
+        const {
+            success,
+            data,
+            error: responseError,
+        } = await login(email, password)
+        if (success && data) {
+            const user = decode(data)
+            props.dispatch(userActions.createUser(user))
+            localStorage.setItem('__BOOKMARK_ACCESS_TOKEN__', data)
+            navigate('/')
+        } else if (responseError) {
+            setError(responseError)
         }
     }
 
@@ -105,7 +96,7 @@ function Login(props: any) {
 
 function mapStateToProps(state: any) {
     return {
-        users: state.users,
+        user: state.user,
     }
 }
 

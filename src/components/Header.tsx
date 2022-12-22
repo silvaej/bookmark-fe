@@ -102,15 +102,37 @@ function Header(props: any) {
                             sx={{
                                 display: { xs: 'block', md: 'none' },
                             }}>
-                            {pages.map((page) => (
-                                <MenuItem
-                                    key={page}
-                                    onClick={handleCloseNavMenu}>
-                                    <Typography textAlign='center'>
-                                        {page}
-                                    </Typography>
-                                </MenuItem>
-                            ))}
+                            {localStorage.getItem(
+                                '__BOOKMARK_ACCESS_TOKEN__'
+                            ) &&
+                                pages.map((page) => (
+                                    <MenuItem
+                                        key={page}
+                                        onClick={handleCloseNavMenu}>
+                                        <Typography textAlign='center'>
+                                            {page}
+                                        </Typography>
+                                    </MenuItem>
+                                ))}
+
+                            <MenuItem
+                                key='login'
+                                onClick={() => {
+                                    !localStorage.getItem(
+                                        '__BOOKMARK_ACCESS_TOKEN__'
+                                    )
+                                        ? handleLogin()
+                                        : handleLogout()
+                                    handleCloseNavMenu()
+                                }}>
+                                <Typography textAlign='center'>
+                                    {!localStorage.getItem(
+                                        '__BOOKMARK_ACCESS_TOKEN__'
+                                    )
+                                        ? 'Login'
+                                        : 'Logout'}
+                                </Typography>
+                            </MenuItem>
                         </Menu>
                     </Box>
                     <BookmarkIcon
@@ -119,8 +141,7 @@ function Header(props: any) {
                     <Typography
                         variant='h5'
                         noWrap
-                        component='a'
-                        href=''
+                        onClick={handleHome}
                         sx={{
                             mr: 2,
                             display: { xs: 'flex', md: 'none' },
@@ -138,24 +159,28 @@ function Header(props: any) {
                             flexGrow: 1,
                             display: { xs: 'none', md: 'flex' },
                         }}>
-                        {pages.map((page) => (
-                            <Button
-                                key={page}
-                                onClick={handleCloseNavMenu}
-                                sx={{
-                                    my: 2,
-                                    color: 'white',
-                                    display: 'block',
-                                }}>
-                                {page}
-                            </Button>
-                        ))}
+                        {localStorage.getItem('__BOOKMARK_ACCESS_TOKEN__') &&
+                            pages.map((page) => (
+                                <Button
+                                    key={page}
+                                    onClick={handleCloseNavMenu}
+                                    sx={{
+                                        my: 2,
+                                        color: 'white',
+                                        display: 'block',
+                                    }}>
+                                    {page}
+                                </Button>
+                            ))}
                     </Box>
 
                     <Box
                         sx={{
                             flexGrow: 0,
-                            display: { xs: 'none', md: 'flex' },
+                            display: {
+                                xs: 'none',
+                                md: 'flex',
+                            },
                         }}>
                         {localStorage.getItem('__BOOKMARK_ACCESS_TOKEN__') ? (
                             <Button
@@ -173,15 +198,6 @@ function Header(props: any) {
                             </Button>
                         )}
                     </Box>
-                    <Box
-                        sx={{
-                            flexGrow: 0,
-                            display: { xs: 'flex', md: 'none' },
-                        }}>
-                        <Button>
-                            <LoginIcon />
-                        </Button>
-                    </Box>
                 </Toolbar>
             </Container>
         </AppBar>
@@ -190,7 +206,7 @@ function Header(props: any) {
 
 function mapStateToProps(state: any) {
     return {
-        users: state.users,
+        user: state.user,
     }
 }
 
