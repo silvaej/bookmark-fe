@@ -3,7 +3,6 @@ import Sheet from '@mui/joy/Sheet'
 import { TextField } from '@mui/joy'
 import { FormEvent, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import axios, { AxiosError } from 'axios'
 import { connect } from 'react-redux'
 import * as userActions from '../redux/actions/userActions'
 import decode from '../utils/decode'
@@ -13,7 +12,9 @@ function Login(props: any) {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [error, setError] = useState('')
+
     const navigate = useNavigate()
+    const { dispatch } = props
 
     const handleSubmit = async () => {
         const {
@@ -23,11 +24,11 @@ function Login(props: any) {
         } = await login(email, password)
         if (success && data) {
             const user = decode(data)
-            props.dispatch(userActions.createUser(user))
+            dispatch(userActions.createUser(user))
             localStorage.setItem('__BOOKMARK_ACCESS_TOKEN__', data)
             navigate('/')
-        } else if (responseError) {
-            setError(responseError)
+        } else {
+            responseError && setError(responseError)
         }
     }
 
